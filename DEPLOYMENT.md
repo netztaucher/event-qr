@@ -1,12 +1,120 @@
 # Event-QR Deployment Guide
-## qr.joerhalfmann.de
+## Vollautomatisches Deployment via WordPress Plugin
 
-### 📋 Voraussetzungen
+> **🚀 NEU:** Das event-qr System wird jetzt vollautomatisch über das WP Amelia QR Tickets Plugin deployed!
+> Kein manueller Server-Zugriff mehr nötig.
 
-1. **Server mit Docker und Docker Compose**
-2. **Domain qr.joerhalfmann.de** zeigt auf Server-IP
-3. **SSL-Zertifikat** für HTTPS (Let's Encrypt empfohlen)
-4. **Google Service Account JSON** für Sheets API
+## 🎯 Ein-Klick-Deployment (Empfohlen)
+
+### Voraussetzungen
+
+1. **WP Amelia QR Tickets Plugin** installiert
+2. **Server mit Docker und Docker Compose**
+3. **Domain qr.joerhalfmann.de** zeigt auf Server-IP
+4. **Google Service Account JSON** (wird über Plugin konfiguriert)
+
+### 🚀 Automatisches Deployment
+
+#### 1. Plugin Setup
+```bash
+# WP Plugin installieren (über WordPress Admin oder manuell)
+cd /wp-content/plugins/
+git clone https://github.com/netztaucher/WP-Amelia-QR-Tickets.git wp-amelia-qr-tickets
+cd wp-amelia-qr-tickets
+composer install --no-dev
+```
+
+#### 2. Plugin aktivieren & konfigurieren
+1. **WordPress Admin → Plugins → WP Amelia QR Tickets aktivieren**
+2. **WP Amelia QR → Settings:**
+   - Google Credentials JSON hochladen
+   - Spreadsheet ID eingeben
+   - "Verbindung testen" ✅
+
+#### 3. Ein-Klick-Deployment
+1. **WP Amelia QR → Dashboard**
+2. **🚀 "Deploy / Restart Scanner" Button klicken**
+3. **Automatischer Ablauf:**
+   - ✅ Google Credentials werden kopiert
+   - ✅ Sichere .env Datei generiert
+   - ✅ event-qr Submodul aktualisiert
+   - ✅ Docker Container gestartet (MongoDB + Backend + Frontend + Nginx)
+   - ✅ Health Checks verifizieren Deployment
+   - ✅ Scanner ist live: https://qr.joerhalfmann.de
+
+#### 4. Status & Monitoring
+- **Deployment Status:** Live im WordPress Admin
+- **Logs anzeigen:** "📋 Logs anzeigen" Button
+- **Container stoppen:** "⏹️ Stop Scanner" Button
+- **Health Check:** Automatisch alle 30 Sekunden
+- **URL:** https://qr.joerhalfmann.de (automatisch verfügbar nach Deployment)
+
+### 📝 Was passiert beim automatischen Deployment?
+
+1. **Git Submodul Update:** `event-qr` Submodul wird aktualisiert
+2. **Credentials Setup:** Google Service Account JSON wird sicher kopiert
+3. **Environment Generation:** Sichere `.env` Datei mit JWT Secret wird generiert
+4. **Docker Build:** Multi-stage Dockerfile baut optimierte Container
+5. **Service Start:** 
+   - **MongoDB:** Datenbank mit Health Checks
+   - **event-qr Backend:** Node.js API mit PM2 Process Management
+   - **Frontend Build:** React App optimiert für Produktion
+   - **Nginx Proxy:** SSL/HTTPS Reverse Proxy mit Rate Limiting
+6. **Health Verification:** Automatische Tests auf localhost:5000 und qr.joerhalfmann.de
+7. **Status Update:** WordPress Admin zeigt Live-Status
+
+### 🎨 Admin Interface Features
+
+- **Real-time Status:** Deployment Status (running/stopped/error) mit Timestamps
+- **Version Management:** Wechsel zwischen `main` und `dev` Branches
+- **Live Logs:** Docker Container Logs direkt im WordPress Admin
+- **One-Click Actions:** Deploy, Stop, Restart, Logs - alles mit einem Klick
+- **Automatic Retry:** Bei Fehlern automatische Neuversuche mit Exponential Backoff
+
+---
+
+## 🎨 Docker-Architektur
+
+### 💻 Container Stack
+
+```
+┌──────────────────────────────────────────────┐
+│              🌐 qr.joerhalfmann.de (HTTPS)              │
+├──────────────────────────────────────────────┤
+│  🚪 Nginx Reverse Proxy (SSL, Rate Limiting)  │
+├──────────────────────────────────────────────┤
+│   ⚙️ event-qr Backend (Node.js + PM2)   │   ⚛️ React Frontend (Static Build)   │
+│        Port 5000 (Internal)         │         Nginx Served             │
+├───────────────────────┴──────────────────────┤
+│              🟢 MongoDB Database              │
+│          Port 27017 (Internal Only)           │
+└──────────────────────────────────────────────┘
+```
+
+### 📊 Datenfluss
+
+```
+WordPress Plugin → Google Sheets ←→ event-qr Backend ←→ MongoDB
+                     ↑                                 ↑
+              QR Scanner (React)              User Database
+```
+
+### 🔐 Sicherheit & Performance
+
+- **SSL/TLS:** Automatische HTTPS-Weiterleitung
+- **Rate Limiting:** API: 10 req/s, Scanning: 5 req/s
+- **Internal Network:** MongoDB nur intern erreichbar
+- **Health Checks:** Alle Container mit Monitoring
+- **PM2 Clustering:** Automatischer Restart bei Fehlern
+- **Gzip Compression:** Optimierte Übertragung
+
+---
+
+## 📚 Manuelles Deployment (Legacy)
+
+> **⚠️ Nur bei Problemen mit automatischem Deployment verwenden**
+
+### Manuelle Voraussetzungen
 
 ### 🚀 Deployment Steps
 
@@ -122,7 +230,29 @@ echo "0 3 * * 0 certbot renew --quiet && docker-compose restart nginx" | crontab
 
 ### 🐛 Troubleshooting
 
-#### Container startet nicht
+#### 🚀 Automatisches Deployment
+
+**Problem:** Deployment Button funktioniert nicht
+- **Lösung:** WordPress Admin → WP Amelia QR → "📋 Logs anzeigen" Button klicken
+- **Debug:** Browser Konsole (F12) auf JavaScript-Fehler prüfen
+- **Alternative:** Plugin deaktivieren/reaktivieren
+
+**Problem:** "Docker is not available on this server"
+- **Lösung:** Docker und Docker Compose auf Server installieren
+- **Test:** SSH zum Server: `docker --version && docker-compose --version`
+
+**Problem:** "Google credentials not found"
+- **Lösung:** WP Admin → Settings → Google Credentials JSON konfigurieren
+- **Test:** "Verbindung testen" Button verwenden
+
+**Problem:** Container starten, aber Health Check schlägt fehl
+- **Lösung:** "📋 Logs anzeigen" → Backend/MongoDB Logs prüfen
+- **Häufig:** Port 5000 oder 3000 bereits belegt
+- **Alternative:** Container manuell neustarten: "⏹️ Stop" → "🚀 Deploy"
+
+#### 💻 Manuelle Fehlerbehebung
+
+**Container startet nicht**
 ```bash
 docker-compose logs event-qr
 docker-compose down && docker-compose up -d
@@ -148,7 +278,60 @@ docker-compose exec mongodb mongosh event-qr --eval "show collections"
 
 ### 📞 Support
 
+#### 🎯 Erste Hilfe (WordPress Admin)
+1. **WP Amelia QR → Dashboard → "📋 Logs anzeigen"** klicken
+2. **Browser Konsole (F12)** auf JavaScript-Fehler prüfen
+3. **Plugin deaktivieren/reaktivieren** (manchmal hilft das)
+4. **"Verbindung testen"** in Settings ausführen
+
+#### 📊 Monitoring URLs
+- **Scanner Frontend:** https://qr.joerhalfmann.de
+- **API Health Check:** https://qr.joerhalfmann.de/health  
+- **Backend Direct:** http://localhost:5000/health (nur lokal)
+
+#### 📝 Logs & Debugging
+```bash
+# WordPress Debug-Log
+tail -f /path/to/wordpress/wp-content/debug.log
+
+# Docker Container Logs
+docker-compose logs -f event-qr
+docker-compose logs -f mongodb
+docker-compose logs -f nginx
+
+# System Resources
+docker stats
+```
+
+#### 🆘 Frequently Asked Questions (FAQ)
+
+**Q: Kann ich das System ohne WordPress Plugin deployen?**
+A: Ja, siehe "Manuelles Deployment (Legacy)" Sektion oben.
+
+**Q: Welche Ports werden verwendet?**
+A: Extern nur 80/443 (HTTP/HTTPS), intern 5000 (Backend), 27017 (MongoDB).
+
+**Q: Wie aktualisiere ich das System?**
+A: "Deploy / Restart Scanner" Button zieht automatisch neueste Versionen.
+
+**Q: Funktioniert das mit anderen Domains?**
+A: Ja, Nginx-Konfiguration in `docker/nginx.conf` anpassen.
+
+**Q: Kann ich mehrere Events parallel scannen?**
+A: Ja, im Frontend können mehrere Events mit verschiedenen Google Sheets erstellt werden.
+
+#### 🚑 Support Kanäle
+
 Bei Problemen:
-1. Logs prüfen (`docker-compose logs`)
-2. Health Checks durchführen
-3. GitHub Issues erstellen: https://github.com/netztaucher/WP-Amelia-QR-Tickets/issues
+1. **Logs prüfen:** WordPress Admin → "📋 Logs anzeigen"
+2. **Health Checks:** https://qr.joerhalfmann.de/health
+3. **GitHub Issues:** [Problem melden](https://github.com/netztaucher/WP-Amelia-QR-Tickets/issues)
+4. **Dokumentation:** [Wiki](https://github.com/netztaucher/WP-Amelia-QR-Tickets/wiki)
+
+#### 💼 Enterprise Support
+
+Für professionellen Support und Custom-Deployments:
+- **Email:** info@netztaucher.de
+- **Custom Domains:** qr.your-domain.de Setup
+- **Scaling:** Multi-Server Deployment
+- **Integration:** Custom WordPress/WooCommerce Anpassungen
