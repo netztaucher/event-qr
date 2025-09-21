@@ -14,7 +14,7 @@ db.events.createIndex({ "sheetId": 1 });
 // Optional: Erstelle einen Admin-User für Tests
 // db.users.insertOne({
 //   username: "admin",
-//   email: "admin@qr.joerhalfmann.de",
+//   email: "admin@qr.joerghalfmann.de",
 //   password: "$2b$10$...", // Gehashtes Passwort
 //   createdAt: new Date(),
 //   role: "admin"

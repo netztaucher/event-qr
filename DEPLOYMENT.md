@@ -10,7 +10,7 @@
 
 1. **WP Amelia QR Tickets Plugin** installiert
 2. **Server mit Docker und Docker Compose**
-3. **Domain qr.joerhalfmann.de** zeigt auf Server-IP
+3. **Domain qr.joerghalfmann.de** zeigt auf Server-IP
 4. **Google Service Account JSON** (wird über Plugin konfiguriert)
 
 ### 🚀 Automatisches Deployment
@@ -40,14 +40,14 @@ composer install --no-dev
    - ✅ event-qr Submodul aktualisiert
    - ✅ Docker Container gestartet (MongoDB + Backend + Frontend + Nginx)
    - ✅ Health Checks verifizieren Deployment
-   - ✅ Scanner ist live: https://qr.joerhalfmann.de
+   - ✅ Scanner ist live: https://qr.joerghalfmann.de
 
 #### 4. Status & Monitoring
 - **Deployment Status:** Live im WordPress Admin
 - **Logs anzeigen:** "📋 Logs anzeigen" Button
 - **Container stoppen:** "⏹️ Stop Scanner" Button
 - **Health Check:** Automatisch alle 30 Sekunden
-- **URL:** https://qr.joerhalfmann.de (automatisch verfügbar nach Deployment)
+- **URL:** https://qr.joerghalfmann.de (automatisch verfügbar nach Deployment)
 
 ### 📝 Was passiert beim automatischen Deployment?
 
@@ -60,7 +60,7 @@ composer install --no-dev
    - **event-qr Backend:** Node.js API mit PM2 Process Management
    - **Frontend Build:** React App optimiert für Produktion
    - **Nginx Proxy:** SSL/HTTPS Reverse Proxy mit Rate Limiting
-6. **Health Verification:** Automatische Tests auf localhost:5000 und qr.joerhalfmann.de
+6. **Health Verification:** Automatische Tests auf localhost:5000 und qr.joerghalfmann.de
 7. **Status Update:** WordPress Admin zeigt Live-Status
 
 ### 🎨 Admin Interface Features
@@ -79,7 +79,7 @@ composer install --no-dev
 
 ```
 ┌──────────────────────────────────────────────┐
-│              🌐 qr.joerhalfmann.de (HTTPS)              │
+│              🌐 qr.joerghalfmann.de (HTTPS)              │
 ├──────────────────────────────────────────────┤
 │  🚪 Nginx Reverse Proxy (SSL, Rate Limiting)  │
 ├──────────────────────────────────────────────┤
@@ -135,9 +135,9 @@ chmod 600 ./google-credentials.json
 ```bash
 # Für Let's Encrypt:
 mkdir -p docker/ssl
-certbot certonly --standalone -d qr.joerhalfmann.de
-cp /etc/letsencrypt/live/qr.joerhalfmann.de/fullchain.pem docker/ssl/cert.pem
-cp /etc/letsencrypt/live/qr.joerhalfmann.de/privkey.pem docker/ssl/key.pem
+certbot certonly --standalone -d qr.joerghalfmann.de
+cp /etc/letsencrypt/live/qr.joerghalfmann.de/fullchain.pem docker/ssl/cert.pem
+cp /etc/letsencrypt/live/qr.joerghalfmann.de/privkey.pem docker/ssl/key.pem
 ```
 
 #### 4. Environment konfigurieren
@@ -201,16 +201,16 @@ docker run --rm -v event-qr_mongodb_data:/data -v $(pwd):/backup alpine \
 
 ### 🌐 DNS Konfiguration
 
-Stelle sicher, dass `qr.joerhalfmann.de` auf deine Server-IP zeigt:
+Stelle sicher, dass `qr.joerghalfmann.de` auf deine Server-IP zeigt:
 
 ```dns
-qr.joerhalfmann.de.  A     YOUR_SERVER_IP
+qr.joerghalfmann.de.  A     YOUR_SERVER_IP
 ```
 
 ### 📊 Monitoring
 
 #### Health Checks
-- **Backend:** `https://qr.joerhalfmann.de/health`
+- **Backend:** `https://qr.joerghalfmann.de/health`
 - **Container Status:** `docker-compose ps`
 - **System Resources:** `docker stats`
 
@@ -285,8 +285,8 @@ docker-compose exec mongodb mongosh event-qr --eval "show collections"
 4. **"Verbindung testen"** in Settings ausführen
 
 #### 📊 Monitoring URLs
-- **Scanner Frontend:** https://qr.joerhalfmann.de
-- **API Health Check:** https://qr.joerhalfmann.de/health  
+- **Scanner Frontend:** https://qr.joerghalfmann.de
+- **API Health Check:** https://qr.joerghalfmann.de/health  
 - **Backend Direct:** http://localhost:5000/health (nur lokal)
 
 #### 📝 Logs & Debugging
@@ -324,7 +324,7 @@ A: Ja, im Frontend können mehrere Events mit verschiedenen Google Sheets erstel
 
 Bei Problemen:
 1. **Logs prüfen:** WordPress Admin → "📋 Logs anzeigen"
-2. **Health Checks:** https://qr.joerhalfmann.de/health
+2. **Health Checks:** https://qr.joerghalfmann.de/health
 3. **GitHub Issues:** [Problem melden](https://github.com/netztaucher/WP-Amelia-QR-Tickets/issues)
 4. **Dokumentation:** [Wiki](https://github.com/netztaucher/WP-Amelia-QR-Tickets/wiki)
 

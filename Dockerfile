@@ -1,5 +1,5 @@
 # Multi-stage Dockerfile für event-qr System
-# Optimiert für Produktion mit qr.joerhalfmann.de
+# Optimiert für Produktion mit qr.joerghalfmann.de
 
 # Stage 1: Frontend Build
 FROM node:18-alpine AS frontend-builder
