@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import QRManagement from "../components/QRManagement";
 
 const Events = () => {
     const [events, setEvents] = useState([]);
@@ -12,6 +13,8 @@ const Events = () => {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [qrManagementOpen, setQrManagementOpen] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -162,12 +165,23 @@ const Events = () => {
                                     <h2 className="text-xl font-semibold">{event.name}</h2>
                                     <p className="text-gray-600">{event.description}</p>
                                     <p className="text-sm text-gray-500">Created on: {new Date(event.date).toLocaleString()}</p>
-                                    <button
-                                        onClick={() => navigate(`/events/scan/${event._id}`)}
-                                        className="mt-2 bg-blue-500 text-white py-1 px-3 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    >
-                                        Scan
-                                    </button>
+                                    <div className="mt-3 flex gap-2">
+                                        <button
+                                            onClick={() => navigate(`/events/scan/${event._id}`)}
+                                            className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                                        >
+                                            📱 Scan
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                setSelectedEvent(event);
+                                                setQrManagementOpen(true);
+                                            }}
+                                            className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
+                                        >
+                                            📄 QR-Codes verwalten
+                                        </button>
+                                    </div>
                                 </li>
                             ))
                         ) : (
@@ -233,6 +247,16 @@ const Events = () => {
                     </div>
                 </div>
             )}
+
+            {/* QR-Management Modal */}
+            <QRManagement
+                event={selectedEvent}
+                isOpen={qrManagementOpen}
+                onClose={() => {
+                    setQrManagementOpen(false);
+                    setSelectedEvent(null);
+                }}
+            />
         </div>
     );
 };

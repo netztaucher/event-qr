@@ -41,6 +41,10 @@ Event QR Web Service is built with a frontend developed using React and a backen
 3. **Event Management**: Users can create, view, and manage events.
 4. **Token-Based Authentication**: Secure login and registration system using JWT.
 5. **Validation for Google Sheets**: The backend verifies the provided Google Sheet ID and Sheet Name during event creation.
+6. **🆕 Bulk QR Code Generation**: Automatically generate QR codes for all invoices/entries in Google Sheets.
+7. **🆕 QR Code Management**: Comprehensive dashboard to track QR code generation status and progress.
+8. **🆕 Event-based QR Processing**: Each event can have its own Google Sheet with independent QR code management.
+9. **🆕 Invoice QR Codes**: Specialized QR codes containing event and invoice information for streamlined processing.
 
 ---
 
@@ -102,10 +106,46 @@ Event QR Web Service is built with a frontend developed using React and a backen
 3. Create events by providing valid Google Sheet ID and Sheet Name.
 4. Scan QR codes and manage event details.
 
+### 🆕 QR Code Generation for Invoices
+
+**NEW FEATURE:** Generate QR codes for all invoices in your Google Sheets automatically.
+
+#### Google Sheets Setup
+Ensure your Google Sheet has the following column structure:
+- **Column A**: Invoice Name/Description
+- **Column B**: Invoice ID (unique identifier)
+- **Column C**: QR Code (will be automatically populated)
+- **Column D**: Amount
+- **Column E**: Status/Notes
+
+#### Using QR Code Generation
+1. **Navigate to Events**: Go to your events list
+2. **Manage QR Codes**: Click "QR-Codes verwalten" for any event
+3. **View Status**: See how many QR codes are generated vs missing
+4. **Generate Codes**: Click "QR-Codes generieren" to create codes for all invoices
+5. **Monitor Progress**: Real-time progress tracking with success/error counts
+
+#### QR Code Data Structure
+Generated QR codes contain:
+```json
+{
+  "eventId": "event_uuid",
+  "invoiceId": "INV-1001",
+  "type": "invoice",
+  "timestamp": "2025-09-24T10:01:43.447Z"
+}
+```
+
+#### API Endpoints
+- `POST /events/qr-codes/generate` - Generate QR codes for event
+- `GET /events/:eventId/qr-status` - Get QR generation status
+
 ### Notes
 
 - The UI currently requires significant improvements to enhance user experience.
 - Ensure that the Google Sheet ID and Sheet Name are valid and accessible by the service account.
+- **QR Generation**: Column C in your Google Sheet will be overwritten with QR code images.
+- **Batch Processing**: The system processes invoices in batches to avoid API rate limits.
 
 ---
 
