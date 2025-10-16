@@ -10,7 +10,7 @@ module.exports = {
       watch: false,
       env: {
         NODE_ENV: 'production',
-        PORT: 5000,
+        PORT: '80',
         DB_URL: process.env.DB_URL || 'mongodb://mongodb:27017/event-qr',
         JWT_SECRET: process.env.JWT_SECRET || 'your-secure-jwt-secret-here'
       },

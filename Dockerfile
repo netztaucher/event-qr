@@ -23,6 +23,9 @@ COPY backend/ ./
 # Stage 3: Production Image
 FROM node:18-alpine AS production
 
+# Copy frontend build to a temp location
+COPY --from=frontend-builder /app/frontend/dist /tmp/frontend
+
 # Install PM2 für process management
 RUN npm install -g pm2
 
@@ -37,8 +40,8 @@ WORKDIR /app
 COPY --from=backend-builder /app/backend ./backend
 COPY --from=backend-builder /app/backend/node_modules ./backend/node_modules
 
-# Copy frontend build
-COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
+# Copy frontend build to final location
+COPY --from=frontend-builder /app/frontend/dist /usr/share/nginx/html
 
 # Copy PM2 ecosystem file
 COPY docker/ecosystem.config.js ./
@@ -56,7 +59,6 @@ USER eventqr
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD node backend/healthcheck.js || exit 1
 
-EXPOSE 5000
-EXPOSE 3000
+EXPOSE 80
 
 CMD ["pm2-runtime", "start", "ecosystem.config.js"]
