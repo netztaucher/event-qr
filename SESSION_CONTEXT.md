@@ -28,7 +28,23 @@ Column layout in Google Sheet:
 - E: Ticket Type
 - F: Status
 
-## Local Testing
+## Testing
+
+### Automated Tests
+Test script available at `scripts/test-docker-stack.sh`:
+```bash
+# Run full test suite
+./scripts/test-docker-stack.sh
+```
+
+The script tests:
+- Container build and startup
+- Service health checks (MongoDB, Backend)
+- Frontend accessibility
+- API endpoints (health, QR generation)
+- Error checking in logs
+
+### Manual Testing
 ```bash
 # Build and run containers
 docker-compose up -d
