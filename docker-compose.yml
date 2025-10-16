@@ -38,6 +38,7 @@ services:
       - PORT=80
       - GOOGLE_CREDENTIALS=${GOOGLE_CREDENTIALS}
       - SHEET_ID=12sOJbAwMD91tZ9iVSUhewym5gdR74QRrM7TpfGpHv6c
+      - SHEET_NAME=${SHEET_NAME:-Tickets}
     volumes:
       - event_qr_logs:/app/logs
       - event_qr_uploads:/app/uploads

@@ -1,14 +1,7 @@
 import { defineConfig } from 'vite'
-import dotenv from 'dotenv';
-dotenv.config();
-import react from '@vitejs/plugin-react-swc'
-import tailwindcss from '@tailwindcss/vite'
+import react from '@vitejs/plugin-react'
 
-// https://vitejs.dev/config/
+// https://vite.dev/config/
 export default defineConfig({
-  base: '/',
-  plugins: [
-    react(),
-    tailwindcss(),
-  ],
+  plugins: [react()],
 })

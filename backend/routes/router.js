@@ -3,6 +3,7 @@ import { GenerateQR, RedeemQR, ScanQR, GenerateEventQRCodes, GetEventQRStatus } 
 import adminAuthRouter from "./adminAuthRoutes.js";
 import eventRouter from "./eventRouter.js";
 import eventQRRouter from "./eventQRRouter.js";
+import ticketRoutes from "./ticketRoutes.js";
 import adminAuthMiddleware from "../middlewares/adminAuthMiddleware.js";
 
 const router = express.Router();
@@ -24,9 +25,10 @@ router.get("/events/:eventId/qr-status", adminAuthMiddleware, GetEventQRStatus);
 
 // Use event routes
 router.use('/events', eventRouter);
+router.use('/tickets', ticketRoutes);
 
 router.use("/auth", adminAuthRouter); 
 
-router.use("/event/qr", eventQRRouter )// Use admin routes
+router.use("/event/qr", eventQRRouter) // Use admin routes
 
 export default router;
