@@ -14,7 +14,7 @@ export const registerUser = async (req, res) => {
     }
 
     let { email, password } = req.body;
-    password = toString(password);
+    password = String(password);
 
     try {
         let user = await User.findOne({ email });

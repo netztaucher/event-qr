@@ -41,7 +41,9 @@ COPY --from=backend-builder /app/backend ./backend
 COPY --from=backend-builder /app/backend/node_modules ./backend/node_modules
 
 # Copy frontend build to final location
-COPY --from=frontend-builder /app/frontend/dist /usr/share/nginx/html
+RUN mkdir -p /usr/share/nginx/html
+COPY --from=frontend-builder /app/frontend/dist/* /usr/share/nginx/html/
+RUN chown -R eventqr:nodejs /usr/share/nginx/html
 
 # Copy PM2 ecosystem file
 COPY docker/ecosystem.config.js ./

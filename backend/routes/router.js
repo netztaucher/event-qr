@@ -7,6 +7,10 @@ import adminAuthMiddleware from "../middlewares/adminAuthMiddleware.js";
 
 const router = express.Router();
 
+router.get("/health", (req, res) => {
+    res.status(200).json({ status: 'healthy' });
+});
+
 router.get("/", (req, res) => {
     res.send("You are on home route");
 });

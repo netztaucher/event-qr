@@ -13,29 +13,29 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'healthy' });
+});
+
 // Resolve paths for serving frontend
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const frontendDir = path.resolve(__dirname, "../frontend/dist");
 
-// Health check endpoint
-app.get('/qr/health', (req, res) => {
-    res.status(200).json({ status: 'healthy' });
-});
-
 // API routes must come before frontend catch-all
-app.use('/qr/api', router);
+app.use('/api', router);
 
-// Serve static frontend under /qr
-app.use('/qr', express.static(frontendDir));
+// Serve static frontend at root
+app.use('/', express.static(frontendDir));
 
-// Serve root SPA paths explicitly
-app.get(['/qr', '/qr/'], (_req, res) => {
+// Serve root SPA path
+app.get('/', (_req, res) => {
     res.sendFile(path.join(frontendDir, 'index.html'));
 });
 
-// SPA fallback for any /qr/* route to index.html
-app.get('/qr/*', (_req, res) => {
+// SPA fallback for any route to index.html
+app.get('*', (_req, res) => {
     res.sendFile(path.join(frontendDir, 'index.html'));
 });
 

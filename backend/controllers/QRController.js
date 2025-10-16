@@ -2,12 +2,22 @@ import { getAuth, getSpreadSheet, getSpreadSheetValues, updateSpreadSheetsValues
 import QRCode from "qrcode";
 import Event from "../models/eventModel.js";
 
+// Resolve sheet name: prefer env SHEET_NAME, otherwise first sheet title
+async function resolveSheetName(spreadsheetId, auth) {
+    const explicit = process.env.SHEET_NAME && process.env.SHEET_NAME.trim();
+    if (explicit) return explicit;
+    const meta = await getSpreadSheet({ spreadsheetId, auth });
+    const sheets = meta.data?.sheets || [];
+    return sheets[0]?.properties?.title || 'Sheet1';
+}
+
 export const ScanQR = async (req, res, next) => {
     try {
         const { id } = req.body;
         const auth = await getAuth();
         const spreadsheetId = process.env.SHEET_ID;
-        const sheets = await getSpreadSheetValues({spreadsheetId, auth, range: "FOOD_COUPONS_QR!A2:F1000"});  
+        const sheetName = await resolveSheetName(spreadsheetId, auth);
+        const sheets = await getSpreadSheetValues({spreadsheetId, auth, range: `${sheetName}!A2:F1000`});  
         for(let i=0; i<sheets.values.length; i++) {
             if(id === sheets.values[i][1]) {
                 return res.status(200).json({excelRow: i+2,name: sheets.values[i][0],couponsLeft: sheets.values[i][4]});
@@ -24,14 +34,15 @@ export const RedeemQR = async (req, res, next) => {
         const {id, count} = req.body;
         const auth = await getAuth();
         const spreadsheetId = process.env.SHEET_ID;
-        const sheets = await getSpreadSheetValues({spreadsheetId, auth, range: "FOOD_COUPONS_QR!A2:F1000"});  
+        const sheetName = await resolveSheetName(spreadsheetId, auth);
+        const sheets = await getSpreadSheetValues({spreadsheetId, auth, range: `${sheetName}!A2:F1000`});  
         for(let i=0; i<sheets.values.length; i++) {
             if(id === sheets.values[i][1]) {
                 console.log(sheets.values[i][4])
                 if (sheets.values[i][4] === "0") {
                     return res.status(401).json({msg: "All Coupons Scanned"});
                 } else {
-                    updateSpreadSheetsValues({spreadsheetId, auth, range: `FOOD_COUPONS_QR!E${i+2}:E${i+2}`, data: [[sheets.values[i][4]-count]]});
+                    updateSpreadSheetsValues({spreadsheetId, auth, range: `${sheetName}!E${i+2}:E${i+2}`, data: [[sheets.values[i][4]-count]]});
                     return res.status(200).json({excelRow: i+2,msg: "Scanned Sucessfully", couponsLeft: sheets.values[i][4]-count});
                 }
             }
@@ -47,10 +58,11 @@ export const GenerateQR = async (req, res, next) => {
         const {from, to} = req.body;
         const auth = await getAuth();
         const spreadsheetId = process.env.SHEET_ID;
-        const sheets = await getSpreadSheetValues({spreadsheetId, auth, range: `FOOD_COUPONS_QR!A${from}:F${to}`});
+        const sheetName = await resolveSheetName(spreadsheetId, auth);
+        const sheets = await getSpreadSheetValues({spreadsheetId, auth, range: `${sheetName}!A${from}:F${to}`});
         for(let i=0; i<sheets.values.length; i++) {
             const generatedQRCode = await QRCode.toDataURL(sheets.values[i][1]);
-            updateSpreadSheetsValues({spreadsheetId, auth, range: `FOOD_COUPONS_QR!C${i+from}:C${i+from}`, data: [[generatedQRCode]]});
+            updateSpreadSheetsValues({spreadsheetId, auth, range: `${sheetName}!C${i+from}:C${i+from}`, data: [[generatedQRCode]]});
         }
         res.send(sheets);
     } catch (ex) {

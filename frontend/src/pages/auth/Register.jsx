@@ -52,7 +52,10 @@ const Register = () => {
 		}
 
 		try {
-			const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/register`, {
+			console.log('Backend URL:', import.meta.env.VITE_BACKEND_URL);
+			const url = `${import.meta.env.VITE_BACKEND_URL}/auth/register`;
+			console.log('Request URL:', url);
+			const response = await fetch(url, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -60,9 +63,18 @@ const Register = () => {
 				body: JSON.stringify({ email, password }),
 			});
 
+			const responseText = await response.text();
+			console.log('Response:', responseText);
+			
 			if (!response.ok) {
-				const errorData = await response.json();
-				throw new Error(errorData.message || "Registration failed");
+				let errorMessage = 'Registration failed';
+				try {
+					const errorData = JSON.parse(responseText);
+					errorMessage = errorData.msg || errorData.message || errorMessage;
+				} catch (e) {
+					console.error('Error parsing response:', e);
+				}
+				throw new Error(errorMessage);
 			}
 
 			navigate("/login"); // Redirect to login after successful registration

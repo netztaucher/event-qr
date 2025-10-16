@@ -1,3 +1,23 @@
+# Project Status
+
+## 🔄 Active Developments
+
+### Docker Architecture Work
+- Parallel deployment in progress:
+  - Local: ARM (Apple Silicon)
+  - Production Server: Intel/AMD64
+- Other agent working on server-side Docker configuration
+- Need to coordinate multi-architecture support between environments
+
+## 📝 Next Steps
+- Implement multi-arch Docker builds
+- Coordinate local/production environment compatibility
+- Test deployment on both architectures
+
+## 🔍 Open Considerations
+- Platform-specific optimizations needed
+- Build process needs to handle both ARM and AMD64
+
 # 📋 Event QR - Project Status Tracker
 *Projektfortschritt und Arbeitsstand für geräteübergreifende Entwicklung*
 

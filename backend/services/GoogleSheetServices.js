@@ -2,8 +2,16 @@ import { google } from "googleapis";
 const sheets = google.sheets('v4');
 
 const getAuth = async() => {
+    const credentials = process.env.GOOGLE_CREDENTIALS 
+        ? JSON.parse(process.env.GOOGLE_CREDENTIALS)
+        : null;
+    
+    if (!credentials) {
+        throw new Error('GOOGLE_CREDENTIALS environment variable is required');
+    }
+
     const auth = new google.auth.GoogleAuth({
-        keyFile: "./google.json",
+        credentials,
         scopes: "https://www.googleapis.com/auth/spreadsheets",
     })
     return await auth.getClient();
